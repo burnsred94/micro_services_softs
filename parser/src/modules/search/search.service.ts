@@ -42,6 +42,7 @@ export class SearchService {
         const arr = [];
         if (typeof keys === 'undefined') return arr
 
+        console.log(keys)
 
         for (const item of keys) {
             try {

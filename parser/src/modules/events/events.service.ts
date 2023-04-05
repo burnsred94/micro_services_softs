@@ -13,6 +13,7 @@ import { SearchService } from '../search/search.service';
 export class EventsService {
     iterator = 0;
     client = []
+    articles = []
 
     constructor(
         private readonly generatorDataInDb: GeneratorDataService,
@@ -27,11 +28,16 @@ export class EventsService {
         const event = 'message';
         const find = await this.generatorDataInDb.findOne({ article: article.message.article });
 
+        this.articles.push({ clientId: client.id, articleId: article.message.article });
+
         const observable$ = of(find.data_generation)
+
+        console.log(this.articles)
 
         observable$
             .pipe(concatMap((data => {
-                const result = this.searchService.search(data[this.iterator], article.message.article)
+                console.log(data[this.iterator].keys)
+                const result = this.searchService.search(data[this.iterator].keys, article.message.article)
                 this.iterator++;
                 return result
             })))
@@ -44,17 +50,26 @@ export class EventsService {
 
         this.iterator === find.instance ? observable$.subscribe().closed : null;
 
+
+
     }
 
     afterInit(server: Server) {
         this.server.emit('connection');
     }
 
-    handleDisconnect(client: Socket) {
+    async handleDisconnect(client: Socket) {
         console.log(`Disconnected: ${client.id}`);
+        console.log(this.articles)
+        const id = this.articles.find((c) => c.clientId === client.id);
+        console.log(id, "ID");
+        await this.generatorDataInDb.delete({ article: id.articleId });
+
+        this.articles = this.articles.filter(c => c.id === client.id);
+        console.log(this.articles)
     }
 
-    handleConnection(client: Socket, ...args: any[]) {
+    async handleConnection(client: Socket, ...args: any[]) {
         client.request.socket.setKeepAlive(true)
 
     }

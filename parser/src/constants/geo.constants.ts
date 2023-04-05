@@ -138,7 +138,7 @@ export const GEO = {
     },
     BY: {
         MINSK: {
-            url: 'https://search.wb.ru/exactmatch/ru/common/v4/search',          
+            url: 'https://search.wb.ru/exactmatch/ru/common/v4/search',
             resultset: 'catalog',
             limit: '100',
             sort: 'popular',
