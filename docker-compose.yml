@@ -1,7 +1,7 @@
 version: "3"
 services:
 
-  parser-api:
+  microservices-parser:
     container_name: parser
     build:
       context: ./parser
@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:3000"
 
-  mongo:
+  microservices-db:
     image: mongo
     container_name: mongo
     restart: always
@@ -28,7 +28,10 @@ services:
     ports:
       - '27017:27017'
 
-  mongo-express:
+  rabbit-mq:
+    image: rabbitmq
+
+  manage-db:
     image: mongo-express
     container_name: mongo-express
     restart: always

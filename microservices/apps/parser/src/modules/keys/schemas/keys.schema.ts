@@ -8,10 +8,12 @@ export type KeysDocument = mongoose.HydratedDocument<Keys>
 @Schema()
 export class Keys {
 
+    @Prop({ type: Number })
+    article: number;
+
     @Prop({ type: Array })
     keys: [];
 
 }
-
 
 export const KeysSchema = SchemaFactory.createForClass(Keys);

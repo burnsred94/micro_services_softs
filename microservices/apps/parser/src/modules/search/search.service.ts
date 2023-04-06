@@ -41,9 +41,6 @@ export class SearchService {
     async search(keys, article: Article) {
         const arr = [];
         if (typeof keys === 'undefined') return arr
-
-        console.log(keys)
-
         for (const item of keys) {
             try {
                 const code = encodeURIComponent(item.key)

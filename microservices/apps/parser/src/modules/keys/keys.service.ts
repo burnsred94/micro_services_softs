@@ -9,14 +9,15 @@ export class KeysService {
 
     constructor(@InjectModel(Keys.name) private readonly keysModel: Model<Keys>) { }
 
-    async create(keys: Array<Key>) {
+    async create(keys: Array<Key>, article: number) {
         return await this.keysModel.create({
+            article: article,
             keys: [...keys]
         });
     }
-    async remove(ObjectId: Types.ObjectId) {
+    async remove(article: number) {
         await this.keysModel.deleteMany({
-            _id: ObjectId
+            article: article
         })
     }
 

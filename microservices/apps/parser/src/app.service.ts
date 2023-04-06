@@ -23,7 +23,6 @@ export class AppService {
 
     const find = await this.generatorDataInDb.findOne({ article: Number(dto.article) });
 
-    console.log
 
     if (find) {
       const { instance } = find;
@@ -35,7 +34,7 @@ export class AppService {
       const chunks = chunk(rmDuplicates, 200)
 
       const chunkId = chunks.map(async (el) => {
-        const objectKeys = await this.keyService.create(el)
+        const objectKeys = await this.keyService.create(el, dto.article)
         return objectKeys._id
       });
 

@@ -4,6 +4,7 @@ import { concatMap, of, repeat } from 'rxjs';
 import { GeneratorDataService } from '../generator-data/generator-data.service';
 import { Server, Socket } from "socket.io"
 import { SearchService } from '../search/search.service';
+import { KeysService } from '../keys/keys.service';
 
 @WebSocketGateway({
     cors: {
@@ -18,6 +19,7 @@ export class EventsService {
     constructor(
         private readonly generatorDataInDb: GeneratorDataService,
         private readonly searchService: SearchService,
+        private readonly keyService: KeysService
     ) { }
 
     @WebSocketServer()
@@ -30,14 +32,15 @@ export class EventsService {
 
         this.articles.push({ clientId: client.id, articleId: article.message.article });
 
-        const observable$ = of(find.data_generation)
 
-        console.log(this.articles)
+        const observable$ = of(find.data_generation)
 
         observable$
             .pipe(concatMap((data => {
-                console.log(data[this.iterator].keys)
-                const result = this.searchService.search(data[this.iterator].keys, article.message.article)
+                const result = this.searchService.search(data[this.iterator]?.keys, article.message.article)
+
+                console.log(typeof data[this.iterator]?.keys)
+
                 this.iterator++;
                 return result
             })))
@@ -49,29 +52,23 @@ export class EventsService {
 
 
         this.iterator === find.instance ? observable$.subscribe().closed : null;
-
-
-
     }
 
     afterInit(server: Server) {
-        this.server.emit('connection');
+        server.emit('connection');
     }
 
     async handleDisconnect(client: Socket) {
-        console.log(`Disconnected: ${client.id}`);
-        console.log(this.articles)
-        const id = this.articles.find((c) => c.clientId === client.id);
-        console.log(id, "ID");
-        await this.generatorDataInDb.delete({ article: id.articleId });
+        const dataClient = this.articles.find((c) => c.clientId === client.id);
+
+        await this.generatorDataInDb.delete({ article: dataClient.articleId });
+        await this.keyService.remove(dataClient.articleId);
 
         this.articles = this.articles.filter(c => c.id === client.id);
-        console.log(this.articles)
     }
 
-    async handleConnection(client: Socket, ...args: any[]) {
+    async handleConnection(client: Socket) {
         client.request.socket.setKeepAlive(true)
-
     }
 
 

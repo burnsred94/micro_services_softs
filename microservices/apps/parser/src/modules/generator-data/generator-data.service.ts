@@ -8,8 +8,7 @@ import { KeysService } from '../keys/keys.service';
 export class GeneratorDataService {
 
     constructor(
-        @InjectModel(GeneratorData.name) private readonly _generatorData: Model<GeneratorDataDocument>,
-        private readonly keysService: KeysService,
+        @InjectModel(GeneratorData.name) private readonly _generatorData: Model<GeneratorDataDocument>
     ) { }
 
     async findOne(data: Partial<GeneratorData>): Promise<GeneratorData> {
@@ -28,8 +27,7 @@ export class GeneratorDataService {
     }
 
     async delete(data: Partial<GeneratorData>): Promise<void> {
-        const { _id } = await this._generatorData.findOneAndDelete({ article: data.article })
-        await this.keysService.remove(_id);
+        await this._generatorData.findOneAndDelete({ article: data.article })
     }
 
 }
